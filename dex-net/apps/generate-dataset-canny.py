@@ -30,8 +30,9 @@ def get_file_name(file_dir_):
     file_list.sort()
     return file_list
 
-
+num = 0
 def do_job(i):
+    global num
     object_name = file_list_all[i].split("/")[-1]
     good_grasp = multiprocessing.Manager().list()
     p_set = [multiprocessing.Process(target=worker, args=(i, 100, 20, good_grasp)) for _ in range(50)]  # grasp_amount per friction: 20*40
@@ -55,10 +56,12 @@ def do_job(i):
 
 
 def worker(i, sample_nums, grasp_amount, good_grasp):
+    global num
+    num += 1
     # file_list_all nmae is "/root/../workspace/PointNetGPD/PointNetGPD/data/ycb-tools/models/ycb/002_master_chef_can" => object_name is "002_master_chef_can"
     object_name = file_list_all[i].split("/")[-1] 
     
-    print("a worker of task {} start".format(object_name))
+    print(f"[Log_{num}] task of job '{i}' start.. {object_name} ]")
 
     if grasp_sample_method == "uniform":
         ags = UniformGraspSampler(gripper, yaml_config)
@@ -72,18 +75,25 @@ def worker(i, sample_nums, grasp_amount, good_grasp):
         ags = PointGraspSampler(gripper, yaml_config)
     else:
         raise NameError("Can not support this sampler")
-    print("Log: do job", i)
-    # print(str(file_list_all[i]) + "/google_512k/nontextured.obj", os.path.isdir(str(file_list_all[i]) + "/google_512k"))
+
     if os.path.exists(str(file_list_all[i]) + "/google_512k/nontextured.obj"):
         of = ObjFile(str(file_list_all[i]) + "/google_512k/nontextured.obj")
         sf = SdfFile(str(file_list_all[i]) + "/google_512k/nontextured.sdf")
     else:
         print("can not find any obj or sdf file!")
         return
+    
+    
     mesh = of.read()
+    print(f"[Log_{num}] mesh loaded..")
+    
     sdf = sf.read()
+    print(f"[Log_{num}] sdf loaded..")
+    
+    print("[Log] GraspableObject3D loaded..")
     obj = GraspableObject3D(sdf, mesh)
-    print("Log: opened object", i + 1, object_name)
+    
+    print("[Log:Success] now opened object", i + 1, object_name)
 
     force_closure_quality_config = {}
     canny_quality_config = {}
