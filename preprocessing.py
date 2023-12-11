@@ -23,8 +23,6 @@ def augment_image(image, depth, bbox):
     rotated_depth = rotate(depth, angle, resize=True)
     translated_image = cv2.warpAffine(rotated_image, M, (rotated_image.shape[1], rotated_image.shape[0]))
     translated_depth = cv2.warpAffine(rotated_depth, M, (rotated_depth.shape[1], rotated_depth.shape[0]))
-
-    # 바운딩 박스 변환
     grasps = bboxes_to_grasps(bbox)
     return translated_image, translated_depth, grasps
 
@@ -48,14 +46,10 @@ for file in sorted(os.listdir(dataset_dir)):
         img = cv2.imread(os.path.join(dataset_dir, file))
         depth = cv2.imread(os.path.join(dataset_dir, file.replace("rgb.png", "depth.png")), cv2.IMREAD_UNCHANGED)
         
-        # 여기서 bbox는 [((x1, y1), (x2, y2), (x3, y3), (x4, y4)), ...] 형태로 주어진다고 가정
-        # bbox 데이터는 파일에서 읽어야 함
         annotation_file = file.replace("rgb.png", "cpos.txt")
-        bbox = read_bbox_from_file(annotation_file)  # bbox 읽는 함수 구현 필요
+        bbox = read_bbox_from_file(annotation_file)
         
 
         for _ in range(500):
             augmented_img, augmented_depth, augmented_bbox = augment_image(img, depth, bbox)
             augmented_data.append((augmented_img, augmented_depth, augmented_bbox))
-
-# 이제 augmented_data를 사용하여 네트워크 학습을 진행할 수 있습니다.
