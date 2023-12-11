@@ -38,7 +38,7 @@ def read_bbox_from_file(file_path):
                              (int(bbox_coords[6]), int(bbox_coords[7])))]
                     bboxes.append(bbox)
             return bboxes
-        
+
 augmented_data = []
 dataset_dir = "rgbd_dataset"
 for file in sorted(os.listdir(dataset_dir)):
@@ -47,8 +47,7 @@ for file in sorted(os.listdir(dataset_dir)):
         depth = cv2.imread(os.path.join(dataset_dir, file.replace("rgb.png", "depth.png")), cv2.IMREAD_UNCHANGED)
         
         annotation_file = file.replace("rgb.png", "cpos.txt")
-        bbox = read_bbox_from_file(annotation_file)
-        
+        bbox = read_bbox_from_file(annotation_file)        
 
         for _ in range(500):
             augmented_img, augmented_depth, augmented_bbox = augment_image(img, depth, bbox)
