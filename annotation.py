@@ -6,21 +6,27 @@ dataset_dir = "rgbd_dataset"
 annotation_dir = "_annotations"
 os.makedirs(annotation_dir, exist_ok=True)
 
+drawing = False 
+ix, iy = -1, -1 
+
 def on_mouse(event, x, y, flags, param):
-    if event == cv2.EVENT_LBUTTONDOWN:
-        print(f"Point: {(x, y)}")
-        points.append((x, y))
-        if len(points) == 4:
-            grasps.append(list(points))
-            points.clear()
+    global ix, iy, drawing
 
-
-def mouse_callback(event, x, y, flags, params):
-    global points
     if event == cv2.EVENT_LBUTTONDOWN:
-        if len(points) < 4:
-            points.append((x, y))
-            cv2.circle(img, (x, y), 5, (0, 255, 0), -1)
+        drawing = True
+        ix, iy = x, y
+
+    elif event == cv2.EVENT_MOUSEMOVE:
+        if drawing == True:
+            img_copy = img.copy()
+            cv2.rectangle(img_copy, (ix, iy), (x, y), (0, 255, 0), 2)
+            cv2.imshow('Image', img_copy)
+
+    elif event == cv2.EVENT_LBUTTONUP:
+        drawing = False
+        grasps.append([(ix, iy), (x, iy), (x, y), (ix, y)])
+        cv2.rectangle(img, (ix, iy), (x, y), (0, 255, 0), 2)
+
 
 def save_grasps(file_name, grasps):
     with open(file_name, 'w') as f:
@@ -28,24 +34,31 @@ def save_grasps(file_name, grasps):
             for point in grasp:
                 f.write(f"{point[0]} {point[1]}\n")
 
+
+if os.path.exists(dataset_dir) is False:
+    print(f"Dataset directory {dataset_dir} does not exist")
+    os.makedirs(dataset_dir)
+
+cv2.namedWindow('Image')
+cv2.setMouseCallback('Image', on_mouse)
+
 for file in sorted(os.listdir(dataset_dir)):
     if file.startswith("rgb"):
-        img = cv2.imread(f"{dataset_dir}/{file}")
-        points = []
+        img_path = os.path.join(dataset_dir, file)
+        img = cv2.imread(img_path)
         grasps = []
-
-        cv2.namedWindow('Image')
-        cv2.setMouseCallback('Image', mouse_callback)
 
         while True:
             cv2.imshow('Image', img)
             key = cv2.waitKey(1) & 0xFF
-            if key == ord('s') and len(points) == 4:
-                annotation_file = f"{annotation_dir}/{file.replace('rgb.png', 'cpos.txt')}"
-                save_grasps(annotation_file, points)
+
+            if key == ord('s'):
+                annotation_file = os.path.join(annotation_dir, file.replace('rgb.png', 'cpos.txt'))
+                save_grasps(annotation_file, grasps)
                 print(f"Saved annotation for {file}")
                 break
+
             elif key == ord('q'):
                 break
 
-        cv2.destroyAllWindows()
+cv2.destroyAllWindows()
