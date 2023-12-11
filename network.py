@@ -69,6 +69,7 @@ class GraspNet(nn.Module):
         return x
     
 def bboxes_to_grasps(box):
+    print(box)
     x = box[0][0] + (box[2][0] - box[0][0]) / 2
     y = box[0][1] + (box[2][1] - box[0][1]) / 2
     tan = (box[2][0] - box[3][0]) / (box[2][1] - box[3][1])
@@ -102,6 +103,7 @@ def read_bbox_from_file(file_path):
                 coords = lines[i+j].strip().split()
                 bbox.append((int(coords[0]), int(coords[1])))
             bboxes.append(bbox)
+    print(bboxes)
     return bboxes
         
 def augment_data(dataset_dir, annotations_dir):
