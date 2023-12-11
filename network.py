@@ -93,25 +93,25 @@ def augment_image(image, depth, bbox):
 
 
 def read_bbox_from_file(file_path):
-            bboxes = []
-            with open(file_path, 'r') as file:
-                for line in file:
-                    bbox_coords = line.strip().split(',')
-                    bbox = [((int(bbox_coords[0]), int(bbox_coords[1])),
-                             (int(bbox_coords[2]), int(bbox_coords[3])),
-                             (int(bbox_coords[4]), int(bbox_coords[5])),
-                             (int(bbox_coords[6]), int(bbox_coords[7])))]
-                    bboxes.append(bbox)
-            return bboxes
+    bboxes = []
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        for i in range(0, len(lines), 4):
+            bbox = []
+            for j in range(4):
+                coords = lines[i+j].strip().split()
+                bbox.append((int(coords[0]), int(coords[1])))
+            bboxes.append(bbox)
+    return bboxes
         
-def augment_data(dataset_dir):
+def augment_data(dataset_dir, annotations_dir):
     augmented_data = []
     for file in sorted(os.listdir(dataset_dir)):
-        if file.endswith("rgb.png"):
+        if file.endswith(".png") and "rgb" in file:
             img = cv2.imread(os.path.join(dataset_dir, file))
-            depth = cv2.imread(os.path.join(dataset_dir, file.replace("rgb.png", "depth.png")), cv2.IMREAD_UNCHANGED)
-            annotation_file = file.replace("rgb.png", "cpos.txt")
-            bbox = read_bbox_from_file(annotation_file)
+            depth = cv2.imread(os.path.join(dataset_dir, file.replace("rgb", "depth")), cv2.IMREAD_UNCHANGED)
+            annotation_file = file.replace(".png", "_cpos.txt")
+            bbox = read_bbox_from_file(os.path.join(annotations_dir, annotation_file))
             for _ in range(500):
                 augmented_img, augmented_depth, augmented_bbox = augment_image(img, depth, bbox)
                 augmented_data.append((augmented_img, augmented_depth, augmented_bbox))
@@ -148,6 +148,8 @@ def train_model(train_loader, test_loader):
     torch.save(model.state_dict(), "grasp_model.pth")
 
 dataset_dir = "rgbd_dataset"
-augmented_data = augment_data(dataset_dir)
+annotations_dir = "rgbd_dataset_annotations"
+
+augmented_data = augment_data(dataset_dir, annotations_dir)
 train_loader, test_loader = load_data(augmented_data)
 train_model(train_loader, test_loader)
