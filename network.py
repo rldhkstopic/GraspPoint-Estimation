@@ -69,7 +69,6 @@ class GraspNet(nn.Module):
         return x
     
 def bboxes_to_grasps(box):
-    print(box)
     x = box[0][0] + (box[2][0] - box[0][0]) / 2
     y = box[0][1] + (box[2][1] - box[0][1]) / 2
     tan = (box[2][0] - box[3][0]) / (box[2][1] - box[3][1])
@@ -89,7 +88,7 @@ def augment_image(image, depth, bbox):
     translated_image = cv2.warpAffine(rotated_image, M, (rotated_image.shape[1], rotated_image.shape[0]))
     translated_depth = cv2.warpAffine(rotated_depth, M, (rotated_depth.shape[1], rotated_depth.shape[0]))
 
-    grasps = bboxes_to_grasps(bbox)
+    grasps = [bboxes_to_grasps(box) for box in bbox]
     return translated_image, translated_depth, grasps
 
 
@@ -103,7 +102,6 @@ def read_bbox_from_file(file_path):
                 coords = lines[i+j].strip().split()
                 bbox.append((int(coords[0]), int(coords[1])))
             bboxes.append(bbox)
-    print(bboxes)
     return bboxes
         
 def augment_data(dataset_dir, annotations_dir):
@@ -127,6 +125,8 @@ def load_data(augmented_data):
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
     return train_loader, test_loader
 
+from tqdm import tqdm
+
 def train_model(train_loader, test_loader):
     model = GraspNet()
     criterion = nn.MSELoss()
@@ -134,7 +134,7 @@ def train_model(train_loader, test_loader):
     num_epochs = 10
     for epoch in range(num_epochs):
         model.train()
-        for i, (img, depth, bbox) in enumerate(train_loader):
+        for i, (img, depth, bbox) in enumerate(tqdm(train_loader)):
             optimizer.zero_grad()
             output = model(img, depth)
             loss = criterion(output, bbox)
@@ -143,7 +143,7 @@ def train_model(train_loader, test_loader):
         model.eval()
         test_loss = 0
         with torch.no_grad():
-            for img, depth, bbox in test_loader:
+            for img, depth, bbox in tqdm(test_loader):
                 output = model(img, depth)
                 test_loss += criterion(output, bbox).item()
         print(f"Epoch {epoch+1}/{num_epochs}, Train Loss: {loss.item():.4f}, Test Loss: {test_loss/len(test_loader):.4f}")
