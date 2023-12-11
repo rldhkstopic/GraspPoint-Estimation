@@ -1,6 +1,7 @@
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
+import math
 import os
 import cv2
 import numpy as np
@@ -13,34 +14,6 @@ from math import atan2, degrees
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
 
-"""
-데이터셋 클래스 (GraspDataset)
-
-데이터셋 클래스는 입력 이미지, 깊이 이미지, 그리고 바운딩 박스 정보를 저장합니다.
-__getitem__ 메서드는 이미지를 텐서로 변환하고 채널 차원을 조정합니다. 깊이 이미지는 추가적인 채널 차원을 갖습니다.
-모델 클래스 (GraspNet)
-
-GraspNet은 ResNet18을 기반으로 하여, 출력을 5개 차원 (x, y, theta, h, w)으로 하는 완전연결층을 포함합니다.
-입력 데이터는 RGB 이미지와 깊이 이미지를 채널 차원에서 결합하여 ResNet에 전달됩니다.
-바운딩 박스 변환 함수 (bboxes_to_grasps)
-
-바운딩 박스 좌표를 입력으로 받아 x, y 중심 좌표, 회전 각도(theta), 높이(h), 너비(w)를 계산합니다.
-이미지 증강 함수 (augment_image)
-
-입력 이미지와 깊이 이미지에 무작위 회전과 평행 이동을 적용합니다.
-이 과정에서 바운딩 박스도 같이 변환됩니다.
-학습 및 평가 루프
-
-트레이닝 데이터셋과 테스트 데이터셋을 생성하고 DataLoader를 사용하여 배치 처리를 합니다.
-모델은 Adam 옵티마이저와 MSE 손실 함수를 사용하여 학습됩니다.
-각 에폭마다 트레이닝 손실과 테스트 손실을 출력합니다.
-입력 데이터 형식
-
-입력 데이터는 RGB 이미지와 깊이 이미지로 구성됩니다.
-RGB 이미지는 3채널, 깊이 이미지는 1채널의 텐서로 변환됩니다.
-바운딩 박스 정보는 모델의 출력과 일치하는 형태로 변환됩니다.
-
-"""
 class GraspDataset(Dataset):
     def __init__(self, data):
         self.data = data
@@ -63,7 +36,7 @@ class GraspNet(nn.Module):
         self.fc = nn.Linear(1000, 5)  # 출력: x, y, theta, h, w
 
     def forward(self, x, depth):
-        x = torch.cat([x, depth], dim=1)  # RGB와 깊이 채널 결합
+        x = torch.cat([x, depth], dim=1) # (B, 4, 224, 224)
         x = self.resnet(x)
         x = self.fc(x)
         return x
@@ -71,11 +44,16 @@ class GraspNet(nn.Module):
 def bboxes_to_grasps(box):
     x = box[0][0] + (box[2][0] - box[0][0]) / 2
     y = box[0][1] + (box[2][1] - box[0][1]) / 2
-    tan = (box[2][0] - box[3][0]) / (box[2][1] - box[3][1])
-    w = np.sqrt((box[1][0] - box[0][0])**2 + (box[1][1] - box[0][1])**2)
-    h = np.sqrt((box[3][0] - box[0][0])**2 + (box[3][1] - box[0][1])**2)
-    theta = 360 - (degrees(atan2(tan, 1)) + 90)
-    return round(x, 3), round(y, 3), round(theta, 3), round(h, 3), round(w, 3)
+    tan = (box[2][0] - box[3][0]) / (box[2][1] - box[3][1] + 1e-6)  # add a small epsilon to prevent division by zero
+    w = math.sqrt((box[0][0] - box[1][0]) ** 2 + (box[0][1] - box[1][1]) ** 2)
+    h = math.sqrt((box[0][0] - box[3][0]) ** 2 + (box[0][1] - box[3][1]) ** 2)
+    theta = math.degrees(math.atan(tan))
+    if theta < 0:
+        theta += 90
+    else:
+        theta -= 90
+    theta = 360 + theta if theta < 0 else theta
+    return round(x, 3), round(y, 3), round(theta, 3), round(w, 3), round(h, 3)
 
 def augment_image(image, depth, bbox):
     angle = np.random.randint(-180, 180)
