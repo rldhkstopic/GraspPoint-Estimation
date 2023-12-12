@@ -63,8 +63,9 @@ try:
         depth_list = list()
         person_id_list = list()
         for i in range(len(bboxes)):
+            print(class_ids[i])
             label = str(classes[int(class_ids[i][0])])
-            if label == 'person':
+            if label == 'pringles':
                 if i in result_boxes:
                     bbox = list(map(int, bboxes[i])) 
                     x, y, x2, y2 = bbox
@@ -74,31 +75,32 @@ try:
                     cv2.rectangle(color_image, (x, y), (x2, y2), color, 2)
                     cv2.rectangle(depth_colormap, (x, y), (x2, y2), color, 2)
                     cv2.putText(color_image, label, (x, y + 30), font, 3, color, 3)
-            elif label == 'head':
-                if i in result_boxes:
-                    bbox = list(map(int, bboxes[i])) 
-                    x, y, x2, y2 = bbox
-                    color = colors[i]
-                    color = (int(color[0]), int(color[1]), int(color[2]))
+                    
+            # elif label == 'head':
+            #     if i in result_boxes:
+            #         bbox = list(map(int, bboxes[i])) 
+            #         x, y, x2, y2 = bbox
+            #         color = colors[i]
+            #         color = (int(color[0]), int(color[1]), int(color[2]))
 
-                    cv2.rectangle(color_image, (x, y), (x2, y2), color, 2)
-                    cv2.rectangle(depth_colormap, (x, y), (x2, y2), color, 2)
-                    cv2.putText(color_image, label, (x, y + 30), font, 3, color, 3)
-                    depth_list.append(depth_image[y:y2, x:x2])
-                    person_id_list.append(i)
+            #         cv2.rectangle(color_image, (x, y), (x2, y2), color, 2)
+            #         cv2.rectangle(depth_colormap, (x, y), (x2, y2), color, 2)
+            #         cv2.putText(color_image, label, (x, y + 30), font, 3, color, 3)
+            #         depth_list.append(depth_image[y:y2, x:x2])
+            #         person_id_list.append(i)
             
-            elif label == 'bottom':
-                if i in result_boxes:
-                    bbox = list(map(int, bboxes[i])) 
-                    x, y, x2, y2 = bbox
-                    color = colors[i]
-                    color = (int(color[0]), int(color[1]), int(color[2]))
+            # elif label == 'bottom':
+            #     if i in result_boxes:
+            #         bbox = list(map(int, bboxes[i])) 
+            #         x, y, x2, y2 = bbox
+            #         color = colors[i]
+            #         color = (int(color[0]), int(color[1]), int(color[2]))
 
-                    cv2.rectangle(color_image, (x, y), (x2, y2), color, 2)
-                    cv2.rectangle(depth_colormap, (x, y), (x2, y2), color, 2)
-                    cv2.putText(color_image, label, (x, y + 30), font, 3, color, 3)
-                    depth_list.append(depth_image[y:y2, x:x2])
-                    person_id_list.append(i)
+            #         cv2.rectangle(color_image, (x, y), (x2, y2), color, 2)
+            #         cv2.rectangle(depth_colormap, (x, y), (x2, y2), color, 2)
+            #         cv2.putText(color_image, label, (x, y + 30), font, 3, color, 3)
+            #         depth_list.append(depth_image[y:y2, x:x2])
+            #         person_id_list.append(i)
 
 
         cv2.imshow('Color Image', color_image)
