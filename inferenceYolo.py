@@ -10,8 +10,8 @@ from ultralytics.utils.checks import check_yaml
 WITDH = 1280
 HEIGHT = 720
 
-model = YOLO('runs/detect/train2/weights/last.pt')
-classes = yaml_load(check_yaml('coco128.yaml'))['names']
+model = YOLO('runs/detect/train/weights/last.pt')
+classes = yaml_load(check_yaml('datasets\pringles_dataset\data.yaml'))['names']
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 pipeline = rs.pipeline()
