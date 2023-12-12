@@ -34,7 +34,7 @@ try:
         cv2.imshow('Depth Image', depth_colormap)
 
         if cv2.waitKey(1) & 0xFF == ord('\r'):   # Enter 키를 누르면
-            img_index = len(os.listdir(dataset_dir)) // 2 +1 
+            img_index = len(os.listdir(dataset_dir)) // 2 + 1
             cv2.imwrite(f"{dataset_dir}/rgb_{img_index}.png", color_image)
             cv2.imwrite(f"{dataset_dir}/depth_{img_index}.png", depth_colormap)
             print(f"Saved RGB and Depth frame {img_index}")
