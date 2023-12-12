@@ -1,8 +1,8 @@
 
-pringles - v3 2023-12-12 2:48pm
+pringles - v4 2023-12-12 4:37pm
 ==============================
 
-This dataset was exported via roboflow.com on December 12, 2023 at 5:49 AM GMT
+This dataset was exported via roboflow.com on December 12, 2023 at 7:56 AM GMT
 
 Roboflow is an end-to-end computer vision platform that helps you
 * collaborate with your team on computer vision projects
@@ -17,7 +17,7 @@ visit https://github.com/roboflow/notebooks
 
 To find over 100k other datasets and pre-trained models, visit https://universe.roboflow.com
 
-The dataset includes 467 images.
+The dataset includes 620 images.
 Pringles are annotated in YOLOv8 format.
 
 The following pre-processing was applied to each image:

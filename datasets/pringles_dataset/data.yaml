@@ -2,12 +2,12 @@ train: ../train/images
 val: ../valid/images
 test: ../test/images
 
-nc: 1
-names: ['a pringles']
+nc: 3
+names: ['bottom', 'head', 'pringles']
 
 roboflow:
   workspace: hanyang-2zmez
   project: pringles-miuc6
-  version: 3
+  version: 4
   license: CC BY 4.0
-  url: https://universe.roboflow.com/hanyang-2zmez/pringles-miuc6/dataset/3
+  url: https://universe.roboflow.com/hanyang-2zmez/pringles-miuc6/dataset/4
