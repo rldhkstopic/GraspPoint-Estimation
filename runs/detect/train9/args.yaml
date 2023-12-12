@@ -1,7 +1,11 @@
 task: detect
 mode: train
 model: yolov8s.pt
+<<<<<<< HEAD
 data: ~/code/GraspPoint-Estimation/pringles_dataset/data.yaml
+=======
+data: /home/kiwan/code/GraspPoint-Estimation/datasets/pringles_dataset/data.yaml
+>>>>>>> 9b6cdc09ef3ad93198c38a9ef573b300675be00d
 epochs: 50
 patience: 50
 batch: 16
@@ -12,7 +16,11 @@ cache: false
 device: null
 workers: 8
 project: null
+<<<<<<< HEAD
 name: null
+=======
+name: train9
+>>>>>>> 9b6cdc09ef3ad93198c38a9ef573b300675be00d
 exist_ok: false
 pretrained: true
 optimizer: auto
@@ -42,6 +50,7 @@ half: false
 dnn: false
 plots: true
 source: null
+<<<<<<< HEAD
 show: false
 save_txt: false
 save_conf: false
@@ -51,12 +60,28 @@ show_conf: true
 vid_stride: 1
 stream_buffer: false
 line_width: null
+=======
+vid_stride: 1
+stream_buffer: false
+>>>>>>> 9b6cdc09ef3ad93198c38a9ef573b300675be00d
 visualize: false
 augment: false
 agnostic_nms: false
 classes: null
 retina_masks: false
+<<<<<<< HEAD
 boxes: true
+=======
+show: false
+save_frames: false
+save_txt: false
+save_conf: false
+save_crop: false
+show_labels: true
+show_conf: true
+show_boxes: true
+line_width: null
+>>>>>>> 9b6cdc09ef3ad93198c38a9ef573b300675be00d
 format: torchscript
 keras: false
 optimize: false
@@ -95,4 +120,8 @@ mixup: 0.0
 copy_paste: 0.0
 cfg: null
 tracker: botsort.yaml
+<<<<<<< HEAD
 save_dir: runs\detect\train9
+=======
+save_dir: runs/detect/train9
+>>>>>>> 9b6cdc09ef3ad93198c38a9ef573b300675be00d
