@@ -10,8 +10,8 @@ from ultralytics.utils.checks import check_yaml
 WITDH = 1280
 HEIGHT = 720
 
-model = YOLO('runs/detect/train/weights/last.pt')
-classes = yaml_load(check_yaml('datasets\pringles_dataset\data.yaml'))['names']
+model = YOLO('Weights/onlyPringles/last.pt')
+classes = yaml_load(check_yaml('datasets/v5/data.yaml'))['names']
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 pipeline = rs.pipeline()
@@ -63,7 +63,6 @@ try:
         depth_list = list()
         person_id_list = list()
         for i in range(len(bboxes)):
-            print(class_ids[i])
             label = str(classes[int(class_ids[i][0])])
             if label == 'pringles':
                 if i in result_boxes:
