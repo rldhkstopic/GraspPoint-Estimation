@@ -55,20 +55,6 @@ def bboxes_to_grasps(box):
     theta = 360 + theta if theta < 0 else theta
     return round(x, 3), round(y, 3), round(theta, 3), round(w, 3), round(h, 3)
 
-def augment_image(image, depth, bbox):
-    angle = np.random.randint(-180, 180)
-    tx = np.random.randint(-50, 50)
-    ty = np.random.randint(-50, 50)
-    M = np.float32([[1, 0, tx], [0, 1, ty]])
-
-    rotated_image = rotate(image, angle, resize=True)
-    rotated_depth = rotate(depth, angle, resize=True)
-    translated_image = cv2.warpAffine(rotated_image, M, (rotated_image.shape[1], rotated_image.shape[0]))
-    translated_depth = cv2.warpAffine(rotated_depth, M, (rotated_depth.shape[1], rotated_depth.shape[0]))
-
-    grasps = [bboxes_to_grasps(box) for box in bbox]
-    return translated_image, translated_depth, grasps
-
 
 def read_bbox_from_file(file_path):
     bboxes = []
@@ -81,20 +67,7 @@ def read_bbox_from_file(file_path):
                 bbox.append((int(coords[0]), int(coords[1])))
             bboxes.append(bbox)
     return bboxes
-        
-def augment_data(dataset_dir, annotations_dir):
-    augmented_data = []
-    for file in sorted(os.listdir(dataset_dir)):
-        if file.endswith(".png") and "rgb" in file:
-            img = cv2.imread(os.path.join(dataset_dir, file))
-            depth = cv2.imread(os.path.join(dataset_dir, file.replace("rgb", "depth")), cv2.IMREAD_UNCHANGED)
-            annotation_file = file.replace(".png", "_cpos.txt")
-            bbox = read_bbox_from_file(os.path.join(annotations_dir, annotation_file))
-            for _ in range(500):
-                augmented_img, augmented_depth, augmented_bbox = augment_image(img, depth, bbox)
-                augmented_data.append((augmented_img, augmented_depth, augmented_bbox))
-    return augmented_data
-
+1
 def load_data(augmented_data):
     train_data, test_data = train_test_split(augmented_data, test_size=0.2, random_state=42)
     train_dataset = GraspDataset(train_data)
@@ -130,6 +103,5 @@ def train_model(train_loader, test_loader):
 dataset_dir = "rgbd_dataset"
 annotations_dir = "rgbd_dataset_annotations"
 
-augmented_data = augment_data(dataset_dir, annotations_dir)
 train_loader, test_loader = load_data(augmented_data)
 train_model(train_loader, test_loader)
