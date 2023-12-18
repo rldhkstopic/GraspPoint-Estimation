@@ -2,6 +2,10 @@
 SAM.py
 # *.png
 # *.jpg
+<<<<<<< HEAD
 *.txt
 
 runs/*
+=======
+*.txt
+>>>>>>> fe82bd57f5b9f7d6bbfb6a4e0777dd7c922408b4
