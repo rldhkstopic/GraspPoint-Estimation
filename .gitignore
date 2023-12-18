@@ -1,5 +1,7 @@
 *.pth
 SAM.py
-*.png
-*.jpg
+# *.png
+# *.jpg
 *.txt
+
+runs/*

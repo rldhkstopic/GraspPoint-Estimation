@@ -10,7 +10,7 @@ from ultralytics.utils.checks import check_yaml
 WITDH = 1280
 HEIGHT = 720
 
-model = YOLO('weights\weights-train1\last.pt')
+model = YOLO('weights\weights-train5\last.pt')
 classes = yaml_load(check_yaml('datasets\pringles\data.yaml'))['names']
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
@@ -50,7 +50,7 @@ try:
             for box in boxes:
                 conf = box.conf
                 if conf > 0.5:
-                    xyxy = box.xyxy.tolist()[0]
+                    xyxy = box.xyxy.tolist()
                     
                     bboxes.append(xyxy)
                     confs.append(float(conf))
