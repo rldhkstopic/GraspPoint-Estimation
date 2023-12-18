@@ -1,0 +1,12 @@
+names:
+- a pringles
+nc: 1
+roboflow:
+  license: CC BY 4.0
+  project: pringles-miuc6
+  url: https://universe.roboflow.com/hanyang-2zmez/pringles-miuc6/dataset/8
+  version: 8
+  workspace: hanyang-2zmez
+test: ../test/images
+train: ../train/images
+val: ../valid/images
