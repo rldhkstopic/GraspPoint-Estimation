@@ -1,7 +1,7 @@
 task: detect
 mode: train
 model: /home/kiwan/code/GraspPoint-Estimation/weights/yolo/yolov8s.pt
-data: /home/kiwan/code/GraspPoint-Estimation/datasets/pringles/data.yaml
+data: /home/kiwan/code/GraspPoint-Estimation/datasets/pringles-8/data.yaml
 epochs: 50
 patience: 50
 batch: 16
