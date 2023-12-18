@@ -10,3 +10,17 @@ roboflow:
 test: ../test/images
 train: ../train/images
 val: ../valid/images
+<<<<<<< HEAD:datasets/pringles/data.yaml
+test: ../test/images
+
+nc: 2
+names: ['a pringles', 'not a pringles']
+
+roboflow:
+  workspace: hanyang-2zmez
+  project: pringles-miuc6
+  version: 7
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/hanyang-2zmez/pringles-miuc6/dataset/7
+=======
+>>>>>>> eec402e37c85ac5b13fd647d58019d6d9e642a58:datasets/pringles-8/data.yaml
