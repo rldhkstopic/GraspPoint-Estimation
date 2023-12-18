@@ -10,8 +10,8 @@ from ultralytics.utils.checks import check_yaml
 WITDH = 1280
 HEIGHT = 720
 
-model = YOLO('runs/detect/train/weights/last.pt')
-classes = yaml_load(check_yaml('datasets\pringles_dataset\data.yaml'))['names']
+model = YOLO('weights\weights-train1\last.pt')
+classes = yaml_load(check_yaml('datasets\pringles\data.yaml'))['names']
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 pipeline = rs.pipeline()
@@ -39,7 +39,6 @@ try:
         depth_image = cv2.resize(depth_image, (WITDH, HEIGHT))
         color_image = cv2.resize(color_image, (WITDH, HEIGHT))
         
-
         depth_colormap = cv2.convertScaleAbs(depth_image, alpha=0.03) # not applyColorMap
         results = model(color_image, stream=True)
         
@@ -59,49 +58,15 @@ try:
 
         result_boxes = cv2.dnn.NMSBoxes(bboxes, confs, 0.25, 0.45, 0.5)
 
+        # Visualization of the results of a detection.
         font = cv2.FONT_HERSHEY_PLAIN
-        depth_list = list()
-        person_id_list = list()
         for i in range(len(bboxes)):
-            print(class_ids[i])
-            label = str(classes[int(class_ids[i][0])])
-            if label == 'pringles':
-                if i in result_boxes:
-                    bbox = list(map(int, bboxes[i])) 
-                    x, y, x2, y2 = bbox
-                    color = colors[i]
-                    color = (int(color[0]), int(color[1]), int(color[2]))
-
-                    cv2.rectangle(color_image, (x, y), (x2, y2), color, 2)
-                    cv2.rectangle(depth_colormap, (x, y), (x2, y2), color, 2)
-                    cv2.putText(color_image, label, (x, y + 30), font, 3, color, 3)
-                    
-            # elif label == 'head':
-            #     if i in result_boxes:
-            #         bbox = list(map(int, bboxes[i])) 
-            #         x, y, x2, y2 = bbox
-            #         color = colors[i]
-            #         color = (int(color[0]), int(color[1]), int(color[2]))
-
-            #         cv2.rectangle(color_image, (x, y), (x2, y2), color, 2)
-            #         cv2.rectangle(depth_colormap, (x, y), (x2, y2), color, 2)
-            #         cv2.putText(color_image, label, (x, y + 30), font, 3, color, 3)
-            #         depth_list.append(depth_image[y:y2, x:x2])
-            #         person_id_list.append(i)
-            
-            # elif label == 'bottom':
-            #     if i in result_boxes:
-            #         bbox = list(map(int, bboxes[i])) 
-            #         x, y, x2, y2 = bbox
-            #         color = colors[i]
-            #         color = (int(color[0]), int(color[1]), int(color[2]))
-
-            #         cv2.rectangle(color_image, (x, y), (x2, y2), color, 2)
-            #         cv2.rectangle(depth_colormap, (x, y), (x2, y2), color, 2)
-            #         cv2.putText(color_image, label, (x, y + 30), font, 3, color, 3)
-            #         depth_list.append(depth_image[y:y2, x:x2])
-            #         person_id_list.append(i)
-
+            if i in result_boxes:
+                x1, y1, x2, y2 = bboxes[i]
+                label = f'{classes[class_ids[i][0]]} {confs[i]:.2f}' 
+                color = colors([class_ids[i][0]])
+                cv2.rectangle(color_image, (x1, y1), (x2, y2), color, 2)
+                cv2.putText(color_image, label, (x1, y1 - 5), font, 1, color, 2)  
 
         cv2.imshow('Color Image', color_image)
         cv2.imshow('Depth Image', depth_colormap)
